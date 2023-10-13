@@ -1,5 +1,6 @@
 package com.nhnacademy.aiot;
 
+import com.nhnacademy.aiot.node.HttpRequestParsingNode;
 import com.nhnacademy.aiot.node.HttpServerNode;
 import com.nhnacademy.aiot.node.SocketInNode;
 import com.nhnacademy.aiot.node.SocketOutNode;
@@ -22,19 +23,27 @@ public class Main {
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
                 HttpServerNode httpServerNode = new HttpServerNode();
+
                 SocketInNode socketInNode = new SocketInNode(socket.getInputStream());
+                HttpRequestParsingNode httpRequestParsingNode = new HttpRequestParsingNode();
+
                 SocketOutNode socketOutNode = new SocketOutNode(socket.getOutputStream());
 
-                Wire inWire = new BufferedWire();
-                httpServerNode.connectInputWires(0, inWire);
-                socketInNode.connectOutputWire(0, inWire);
+                Wire socketInWire = new BufferedWire();
+                socketInNode.connectOutputWire(0, socketInWire);
+                httpServerNode.connectInputWires(0, socketInWire);
 
-                Wire outWire = new BufferedWire();
-                httpServerNode.connectOutputWire(0, outWire);
-                socketOutNode.connectInputWires(0, outWire);
+                Wire httpRequestParsingWire = new BufferedWire();
+                httpServerNode.connectOutputWire(0, httpRequestParsingWire);
+                httpRequestParsingNode.connectInputWires(0, httpRequestParsingWire);
+
+                Wire socketOutWire = new BufferedWire();
+                httpRequestParsingNode.connectOutputWire(0, socketOutWire);
+                socketOutNode.connectInputWires(0, socketOutWire);
 
                 httpServerNode.start();
                 socketInNode.start();
+                httpRequestParsingNode.start();
                 socketOutNode.start();
             }
         } catch (IOException e) {
