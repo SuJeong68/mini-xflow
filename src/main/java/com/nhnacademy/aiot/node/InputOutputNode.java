@@ -40,6 +40,14 @@ public abstract class InputOutputNode extends ActiveNode {
         outputWires[index] = wire;
     }
 
+    public int getInputWiresLength() {
+        return inputWires.length;
+    }
+
+    public Wire getInputWire(int index) {
+        return inputWires[index];
+    }
+
     void output(Message message) {
         for (Wire wire : outputWires) {
             if (wire != null) {
@@ -47,7 +55,7 @@ public abstract class InputOutputNode extends ActiveNode {
             }
         }
 
-        logger.trace("Message Out");
+        logger.trace("Message Out : {}", message);
     }
 
 }

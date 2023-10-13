@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class BufferedWire implements Wire {
-    private Queue<Message> messageQueue;
+    private final Queue<Message> messageQueue;
 
     public BufferedWire() {
         super();

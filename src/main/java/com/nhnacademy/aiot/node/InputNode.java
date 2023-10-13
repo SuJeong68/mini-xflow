@@ -33,6 +33,6 @@ public abstract class InputNode extends ActiveNode {
             }
         }
 
-        logger.trace("Message Out");
+        logger.trace("Message Out : {}", message);
     }
 }
