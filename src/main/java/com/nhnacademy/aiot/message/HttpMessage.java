@@ -19,4 +19,8 @@ public class HttpMessage extends Message {
     public Response getResponse() {
         return response;
     }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
 }

@@ -34,12 +34,16 @@ public class Request {
         return method;
     }
 
-    public String getBody() {
-        return body.toString();
+    public String getPath() {
+        return path;
     }
 
     public String getVersion() {
         return version;
+    }
+
+    public String getBody() {
+        return body.toString();
     }
 
     public boolean isExistHeader(String key) {

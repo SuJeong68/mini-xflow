@@ -23,7 +23,7 @@ public class SocketOutNode extends OutputNode {
         try {
             for (int i = 0; i < getInputWiresLength(); i++) {
                 Wire inputWire = getInputWire(i);
-                while (inputWire.hasMessage()) {
+                if (inputWire.hasMessage()) {
                     Message message = inputWire.get();
                     if (message instanceof StringMessage) {
                         writer.write(((StringMessage) message).getPayload() + "\n");
@@ -32,20 +32,13 @@ public class SocketOutNode extends OutputNode {
                         writer.write("============Request============\n");
                         writer.write(((HttpMessage) message).getRequest().toString());
                         writer.flush();
+
+                        writer.close();
                     }
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    synchronized void postprocess() {
-        try {
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
         }
     }
 }

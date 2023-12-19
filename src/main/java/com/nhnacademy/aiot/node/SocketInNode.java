@@ -23,7 +23,7 @@ public class SocketInNode extends InputNode {
                 output(new StringMessage(line));
             }
         } catch (IOException e) {
-            throw new RuntimeException();
+            Thread.currentThread().interrupt();
         }
     }
 

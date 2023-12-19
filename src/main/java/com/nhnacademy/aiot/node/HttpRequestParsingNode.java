@@ -8,7 +8,6 @@ import com.nhnacademy.aiot.message.StringMessage;
 import com.nhnacademy.aiot.wire.Wire;
 
 public class HttpRequestParsingNode extends InputOutputNode {
-    private static final String CRLF = "\r\n";
 
     @Override
     void process() {
@@ -25,21 +24,25 @@ public class HttpRequestParsingNode extends InputOutputNode {
         String[] splited = ((StringMessage) inputWire.get()).getPayload().split(" ");
         Request request = new Request(splited[0], splited[1], splited[2]);
 
-        Message message;
-        while (inputWire.hasMessage()) {
+        logger.debug("Init Request => {}", request);
+
+        Message message = inputWire.get();
+
+        String line;
+        while (inputWire.hasMessage() && !(line = ((StringMessage) message).getPayload()).equals("")) {
+            logger.debug("Header => {}", line);
+
+            splited = line.trim().split(":");
+            request.addHeader(splited[0], splited[1]);
+
             message = inputWire.get();
-            String line;
-            while (!(line = ((StringMessage) message).getPayload()).equals(CRLF)) {
-                logger.debug(line);
+        }
 
-                splited = line.trim().split(":");
-                request.addHeader(splited[0], splited[1]);
-            }
+        if (request.getMethod().equals("POST") && request.isExistHeader("Content-Length")) {
+            while (inputWire.hasMessage() && !(line = ((StringMessage) message).getPayload()).equals("")) {
+                request.addBody(line);
 
-            if (request.getMethod().equals("POST") && request.isExistHeader("Content-Length")) {
-                while (!(line = ((StringMessage) message).getPayload()).equals(CRLF)) {
-                    request.addBody(line);
-                }
+                message = inputWire.get();
             }
         }
         return request;
